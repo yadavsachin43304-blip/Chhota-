@@ -1,0 +1,226 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1: Global Default-Deny Catch-All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Core Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Validation Blueprints
+    function isValidAgentTask(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 300 &&
+             data.userRequest is string && data.userRequest.size() >= 1 && data.userRequest.size() <= 4000 &&
+             data.intentCategory is string && data.intentCategory in [
+               'DEVICE_CONTROL', 'BROWSER_AUTOMATION', 'YOUTUBE_SOCIAL',
+               'BUSINESS_WORKFLOW', 'CODING_AGENT', 'FILE_OPERATION',
+               'COMMUNICATION', 'FINANCIAL_SENSITIVE', 'INFO_RETRIEVAL'
+             ] &&
+             data.riskLevel is string && data.riskLevel in ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] &&
+             data.status is string && data.status in [
+               'PENDING', 'AWAITING_APPROVAL', 'EXECUTING',
+               'COMPLETED', 'FAILED', 'CANCELLED', 'DELEGATED_REMOTE'
+             ] &&
+             data.requiresApproval is bool &&
+             data.approvedByOwner is bool &&
+             data.affectedResource is string && data.affectedResource.size() <= 1000 &&
+             data.reversible is bool &&
+             data.verificationResult is string && data.verificationResult.size() <= 2000 &&
+             data.planSummary is string && data.planSummary.size() <= 4000 &&
+             data.executionTarget is string && data.executionTarget in ['LOCAL_DEVICE', 'REMOTE_SERVER'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidBusinessProject(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 200 &&
+             data.category is string && data.category in [
+               'MARKET_RESEARCH', 'CONTENT_MARKETING', 'SALES_PIPELINE',
+               'INVOICE_FINANCE', 'PRODUCT_LAUNCH', 'ECOMMERCE'
+             ] &&
+             data.stage is string && data.stage in ['PLANNING', 'ACTIVE', 'REVIEW', 'COMPLETED'] &&
+             data.estimatedExpenseInr is int && data.estimatedExpenseInr >= 0 &&
+             data.actualRevenueInr is int && data.actualRevenueInr >= 0 &&
+             data.summary is string && data.summary.size() <= 4000 &&
+             data.nextAction is string && data.nextAction.size() <= 500 &&
+             data.deadlineText is string && data.deadlineText.size() <= 100 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidSecureFileRecord(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.fileName is string && data.fileName.size() >= 1 && data.fileName.size() <= 255 &&
+             data.mimeType is string && data.mimeType.size() >= 1 && data.mimeType.size() <= 120 &&
+             data.folder is string && data.folder.size() >= 1 && data.folder.size() <= 100 &&
+             data.tags is string && data.tags.size() <= 500 &&
+             data.sizeBytes is int && data.sizeBytes >= 0 &&
+             data.encryptedWithKeystore is bool &&
+             data.storageLocation is string && data.storageLocation in ['DEVICE_ENCRYPTED', 'CLOUD_AUTHORIZED'] &&
+             data.aiSummary is string && data.aiSummary.size() <= 4000 &&
+             data.sha256Checksum is string && data.sha256Checksum.size() <= 128 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidSecurityAuditLog(data) {
+      return data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userId == request.auth.uid &&
+             data.eventType is string && data.eventType in [
+               'AUTH_VERIFIED', 'UNTRUSTED_SPEAKER_BLOCKED', 'PROMPT_INJECTION_BLOCKED',
+               'APPROVAL_GRANTED', 'APPROVAL_DENIED', 'TASK_EXECUTED',
+               'TASK_STOPPED', 'TOOL_FAILURE', 'FILE_ENCRYPTED', 'FILE_DELETED'
+             ] &&
+             data.severity is string && data.severity in ['INFO', 'WARNING', 'CRITICAL'] &&
+             data.actorIdentity is string && data.actorIdentity.size() >= 1 && data.actorIdentity.size() <= 120 &&
+             data.description is string && data.description.size() >= 1 && data.description.size() <= 2000 &&
+             data.taskRefId is string && data.taskRefId.size() <= 128 &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    // 1. Agent Tasks Collection
+    match /tasks/{taskId} {
+      allow get: if isSignedIn() && isValidId(taskId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(taskId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'title', 'userRequest', 'intentCategory', 'riskLevel',
+                         'status', 'requiresApproval', 'approvedByOwner', 'affectedResource',
+                         'reversible', 'verificationResult', 'planSummary', 'executionTarget',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'title', 'userRequest', 'intentCategory', 'riskLevel',
+                         'status', 'requiresApproval', 'approvedByOwner', 'affectedResource',
+                         'reversible', 'verificationResult', 'planSummary', 'executionTarget',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidAgentTask(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(taskId) &&
+                       isValidAgentTask(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         // Action: Status, verification, or approval transition
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'title', 'status', 'approvedByOwner', 'verificationResult',
+                           'planSummary', 'executionTarget', 'updatedAt'
+                         ])
+                       );
+
+      allow delete: if isSignedIn() && isValidId(taskId) && existing().userId == request.auth.uid;
+    }
+
+    // 2. Business Projects Collection
+    match /business_projects/{projectId} {
+      allow get: if isSignedIn() && isValidId(projectId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(projectId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'name', 'category', 'stage', 'estimatedExpenseInr',
+                         'actualRevenueInr', 'summary', 'nextAction', 'deadlineText',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'name', 'category', 'stage', 'estimatedExpenseInr',
+                         'actualRevenueInr', 'summary', 'nextAction', 'deadlineText',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidBusinessProject(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(projectId) &&
+                       isValidBusinessProject(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'category', 'stage', 'estimatedExpenseInr',
+                         'actualRevenueInr', 'summary', 'nextAction', 'deadlineText', 'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(projectId) && existing().userId == request.auth.uid;
+    }
+
+    // 3. Secure Files Collection
+    match /secure_files/{fileId} {
+      allow get: if isSignedIn() && isValidId(fileId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(fileId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'fileName', 'mimeType', 'folder', 'tags', 'sizeBytes',
+                         'encryptedWithKeystore', 'storageLocation', 'aiSummary',
+                         'sha256Checksum', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'fileName', 'mimeType', 'folder', 'tags', 'sizeBytes',
+                         'encryptedWithKeystore', 'storageLocation', 'aiSummary',
+                         'sha256Checksum', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidSecureFileRecord(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(fileId) &&
+                       isValidSecureFileRecord(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'fileName', 'folder', 'tags', 'storageLocation', 'aiSummary', 'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(fileId) && existing().userId == request.auth.uid;
+    }
+
+    // 4. Immutable Security Audit Logs Collection
+    match /security_logs/{logId} {
+      allow get: if isSignedIn() && isValidId(logId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(logId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'eventType', 'severity', 'actorIdentity',
+                         'description', 'taskRefId', 'createdAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'eventType', 'severity', 'actorIdentity',
+                         'description', 'taskRefId', 'createdAt'
+                       ]) &&
+                       isValidSecurityAuditLog(incoming());
+
+      // Append-only audit log: updates and deletes strictly prohibited
+      allow update, delete: if false;
+    }
+  }
+}

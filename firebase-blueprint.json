@@ -1,0 +1,335 @@
+{
+  "entities": {
+    "AgentTask": {
+      "title": "AgentTask",
+      "description": "Represents a voice or text task planned, evaluated, and executed by CHHOTU AI.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID."
+        },
+        "title": {
+          "type": "string",
+          "description": "Concise task title in Hindi or English."
+        },
+        "userRequest": {
+          "type": "string",
+          "description": "Raw voice or text command issued by the owner."
+        },
+        "intentCategory": {
+          "type": "string",
+          "enum": [
+            "DEVICE_CONTROL",
+            "BROWSER_AUTOMATION",
+            "YOUTUBE_SOCIAL",
+            "BUSINESS_WORKFLOW",
+            "CODING_AGENT",
+            "FILE_OPERATION",
+            "COMMUNICATION",
+            "FINANCIAL_SENSITIVE",
+            "INFO_RETRIEVAL"
+          ],
+          "description": "Classified intent category."
+        },
+        "riskLevel": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+          "description": "Evaluated risk level from PermissionEvaluator."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "AWAITING_APPROVAL",
+            "EXECUTING",
+            "COMPLETED",
+            "FAILED",
+            "CANCELLED",
+            "DELEGATED_REMOTE"
+          ],
+          "description": "Current execution lifecycle state."
+        },
+        "requiresApproval": {
+          "type": "boolean",
+          "description": "Whether explicit human owner confirmation is required."
+        },
+        "approvedByOwner": {
+          "type": "boolean",
+          "description": "Whether the owner explicitly approved this task."
+        },
+        "affectedResource": {
+          "type": "string",
+          "description": "Target app, URL, file, or account affected by this task."
+        },
+        "reversible": {
+          "type": "boolean",
+          "description": "Whether the action can be undone."
+        },
+        "verificationResult": {
+          "type": "string",
+          "description": "Post-execution verification outcome."
+        },
+        "planSummary": {
+          "type": "string",
+          "description": "Ordered steps and tool execution summary."
+        },
+        "executionTarget": {
+          "type": "string",
+          "enum": ["LOCAL_DEVICE", "REMOTE_SERVER"],
+          "description": "Whether the task runs locally on the phone or on the remote job queue."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when created via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when last updated via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "title",
+        "userRequest",
+        "intentCategory",
+        "riskLevel",
+        "status",
+        "requiresApproval",
+        "approvedByOwner",
+        "affectedResource",
+        "reversible",
+        "verificationResult",
+        "planSummary",
+        "executionTarget",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "BusinessProject": {
+      "title": "BusinessProject",
+      "description": "Represents a business workspace initiative, sales opportunity, or marketing campaign.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "Project, campaign, or opportunity name."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "MARKET_RESEARCH",
+            "CONTENT_MARKETING",
+            "SALES_PIPELINE",
+            "INVOICE_FINANCE",
+            "PRODUCT_LAUNCH",
+            "ECOMMERCE"
+          ],
+          "description": "Business domain category."
+        },
+        "stage": {
+          "type": "string",
+          "enum": ["PLANNING", "ACTIVE", "REVIEW", "COMPLETED"],
+          "description": "Current workflow stage."
+        },
+        "estimatedExpenseInr": {
+          "type": "integer",
+          "description": "Estimated expense in INR."
+        },
+        "actualRevenueInr": {
+          "type": "integer",
+          "description": "Recorded revenue in INR."
+        },
+        "summary": {
+          "type": "string",
+          "description": "AI research findings, competitor analysis, or campaign plan."
+        },
+        "nextAction": {
+          "type": "string",
+          "description": "Next actionable milestone."
+        },
+        "deadlineText": {
+          "type": "string",
+          "description": "Target deadline label."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "category",
+        "stage",
+        "estimatedExpenseInr",
+        "actualRevenueInr",
+        "summary",
+        "nextAction",
+        "deadlineText",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SecureFileRecord": {
+      "title": "SecureFileRecord",
+      "description": "Metadata for an encrypted local or cloud-authorized file in CHHOTU AI Secure File Storage.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID."
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Display name of the file."
+        },
+        "mimeType": {
+          "type": "string",
+          "description": "MIME type of the file."
+        },
+        "folder": {
+          "type": "string",
+          "description": "Workspace folder name."
+        },
+        "tags": {
+          "type": "string",
+          "description": "Comma-separated tags."
+        },
+        "sizeBytes": {
+          "type": "integer",
+          "description": "File size in bytes."
+        },
+        "encryptedWithKeystore": {
+          "type": "boolean",
+          "description": "Whether encrypted at rest with Android Keystore AES-GCM."
+        },
+        "storageLocation": {
+          "type": "string",
+          "enum": ["DEVICE_ENCRYPTED", "CLOUD_AUTHORIZED"],
+          "description": "Storage tier."
+        },
+        "aiSummary": {
+          "type": "string",
+          "description": "Document summary or extracted insights."
+        },
+        "sha256Checksum": {
+          "type": "string",
+          "description": "Integrity checksum of the file."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "fileName",
+        "mimeType",
+        "folder",
+        "tags",
+        "sizeBytes",
+        "encryptedWithKeystore",
+        "storageLocation",
+        "aiSummary",
+        "sha256Checksum",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "SecurityAuditLog": {
+      "title": "SecurityAuditLog",
+      "description": "Immutable security and observability audit log entry.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Authenticated owner UID."
+        },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "AUTH_VERIFIED",
+            "UNTRUSTED_SPEAKER_BLOCKED",
+            "PROMPT_INJECTION_BLOCKED",
+            "APPROVAL_GRANTED",
+            "APPROVAL_DENIED",
+            "TASK_EXECUTED",
+            "TASK_STOPPED",
+            "TOOL_FAILURE",
+            "FILE_ENCRYPTED",
+            "FILE_DELETED"
+          ],
+          "description": "Security event classification."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["INFO", "WARNING", "CRITICAL"],
+          "description": "Severity level."
+        },
+        "actorIdentity": {
+          "type": "string",
+          "description": "Verified owner or untrusted source label."
+        },
+        "description": {
+          "type": "string",
+          "description": "Sanitized security audit description without secrets or raw audio."
+        },
+        "taskRefId": {
+          "type": "string",
+          "description": "Associated task ID or N/A."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "userId",
+        "eventType",
+        "severity",
+        "actorIdentity",
+        "description",
+        "taskRefId",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/AgentTask" },
+      "description": "Stores voice and text agent tasks with permission evaluations, approvals, and verification states."
+    },
+    "/business_projects/{projectId}": {
+      "schema": { "$ref": "#/entities/BusinessProject" },
+      "description": "Stores personal business assistant projects, research, revenue/expense tracking, and marketing pipelines."
+    },
+    "/secure_files/{fileId}": {
+      "schema": { "$ref": "#/entities/SecureFileRecord" },
+      "description": "Stores encrypted file metadata, Keystore encryption status, and AI document summaries."
+    },
+    "/security_logs/{logId}": {
+      "schema": { "$ref": "#/entities/SecurityAuditLog" },
+      "description": "Append-only security and observability audit logs for owner authentication, prompt injection defense, and tool executions."
+    }
+  }
+}

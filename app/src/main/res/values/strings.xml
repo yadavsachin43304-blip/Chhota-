@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">CHHOTU AI</string>
+    <string name="accessibility_service_label">CHHOTU AI Screen &amp; Workflow Verifier</string>
+    <string name="accessibility_service_description">User-authorized screen verification and assisted navigation for CHHOTU AI. Never bypasses authentication, CAPTCHAs, or payment confirmations.</string>
+    <string name="greeting_hindi">नमस्ते दोस्त! मैं छोटू हूँ — आपका सुरक्षित व्यक्तिगत AI एजेंट।</string>
+    <string name="untrusted_speaker_rejection">माफ़ करना, मैं केवल अपने मालिक के प्रमाणित निर्देशों पर काम कर सकता हूँ।</string>
+    <string name="stop_all_tasks">सभी कार्य तुरंत रोकें (STOP)</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+</resources>

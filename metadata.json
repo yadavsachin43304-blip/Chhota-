@@ -1,0 +1,6 @@
+{
+  "name": "CHHOTU AI",
+  "description": "Secure, voice-first personal AI agent, device automation assistant, business workspace, coding agent, and encrypted file manager for Android.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

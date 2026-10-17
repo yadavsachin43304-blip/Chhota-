@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="360dp"
+    android:height="160dp"
+    android:viewportWidth="360"
+    android:viewportHeight="160">
+    <!-- Deep obsidian card background -->
+    <path android:pathData="M0,0h360v160h-360z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="360"
+                android:endY="160"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#090F1E" />
+                <item android:offset="0.5" android:color="#111C35" />
+                <item android:offset="1.0" android:color="#192A4D" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Subtle cyber grid lines -->
+    <path
+        android:strokeColor="#1A00F5D4"
+        android:strokeWidth="1"
+        android:pathData="M0,40L360,40M0,80L360,80M0,120L360,120M60,0L60,160M120,0L120,160M180,0L180,160M240,0L240,160M300,0L300,160" />
+    <!-- Neural wave curves -->
+    <path
+        android:strokeColor="#6600F5D4"
+        android:strokeWidth="2.5"
+        android:pathData="M0,95 Q90,35 180,80 T360,65" />
+    <path
+        android:strokeColor="#99FF9F1C"
+        android:strokeWidth="2.5"
+        android:pathData="M0,70 Q90,125 180,80 T360,95" />
+    <!-- Center glowing orb -->
+    <path
+        android:fillColor="#2600F5D4"
+        android:pathData="M180,80m-44,0a44,44 0,1 1,88 0a44,44 0,1 1,-88 0" />
+    <path
+        android:fillColor="#4DFF9F1C"
+        android:pathData="M180,80m-28,0a28,28 0,1 1,56 0a28,28 0,1 1,-56 0" />
+    <path
+        android:fillColor="#FF9F1C"
+        android:pathData="M180,80m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0" />
+</vector>

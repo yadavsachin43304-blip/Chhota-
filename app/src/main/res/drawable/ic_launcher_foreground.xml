@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer voice resonance ring -->
+    <path
+        android:fillColor="#3300F5D4"
+        android:pathData="M54,54m-31,0a31,31 0,1 1,62 0a31,31 0,1 1,-62 0" />
+    <!-- Middle shield/orb ring -->
+    <path
+        android:fillColor="#00F5D4"
+        android:pathData="M54,28A26,26 0,1 1,28 54A26,26 0,0 1,54 28M54,32A22,22 0,1 0,76 54A22,22 0,0 0,54 32Z" />
+    <!-- Core Saffron AI Voice Orb -->
+    <path
+        android:fillColor="#FF9F1C"
+        android:pathData="M54,54m-15,0a15,15 0,1 1,30 0a15,15 0,1 1,-30 0" />
+    <!-- Voice waveform bars inside core -->
+    <path
+        android:fillColor="#080D1A"
+        android:pathData="M46,49h3v10h-3zM52.5,44h3v20h-3zM59,49h3v10h-3z" />
+</vector>
