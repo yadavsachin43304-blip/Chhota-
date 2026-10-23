@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
@@ -147,10 +147,10 @@ enum class ChhotuNavTab(
     val testTagId: String
 ) {
     HOME("home", "Home", Icons.Filled.Mic, "nav_tab_home"),
-    TASKS("tasks", "Tasks", Icons.Filled.Assignment, "nav_tab_tasks"),
+    TASKS("tasks", "Tasks", Icons.AutoMirrored.Filled.Assignment, "nav_tab_tasks"),
     BUSINESS("business", "Business", Icons.Filled.BusinessCenter, "nav_tab_business"),
-    FILES("files", "Vault Storage", Icons.Filled.FolderSpecial, "nav_tab_files"),
-    ACTIVITY("activity", "Security", Icons.Filled.History, "nav_tab_activity"),
+    FILES("files", "Files", Icons.Filled.FolderSpecial, "nav_tab_files"),
+    ACTIVITY("activity", "Activity", Icons.Filled.History, "nav_tab_activity"),
     SETTINGS("settings", "Settings", Icons.Filled.Settings, "nav_tab_settings")
 }
 
